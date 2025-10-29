@@ -1,0 +1,31 @@
+echo "test" > file.txt
+
+md5sum file.txt      # MD5 hash
+
+sha1sum file.txt     # SHA-1 hash
+
+
+MD5(Message Digest 5):
+MD5 is a widely used cryptographic hash function that takes an input (like a file or message) and produces a 128-bit (32-character) unique hash value.
+It is mainly used to check data integrity — ensuring that the content has not been altered or corrupted.
+
+SHA(Secure Hash Algorithm)
+SHA-1 is a cryptographic hash function that converts data into a 160-bit (40-character) hash value.
+
+
+Concept: Hashing is a one-way process that takes any input (text, a file, etc.) and produces a fixed-length string of characters called a hash. This process is not reversible, meaning you cannot get the original data back from the hash.
+
+Why We Use It:
+Data Integrity: To verify that a file has not been changed or corrupted. If you calculate the hash of a file and it matches the original hash provided by the source, you know the file is identical.
+Password Storage: Systems almost never store your actual password. They store the hash of your password. When you log in, the system hashes the password you entered and compares it to the stored hash.
+
+Your Experiment:
+You are creating a file named file.txt.
+You are using two different hashing algorithms, md5sum (MD5) and sha1sum (SHA-1), to generate two different hashes for the exact same file.
+
+Potential Viva Questions:
+Q: What is the difference between hashing and encryption?
+A: Hashing is a one-way process used for integrity and validation. Encryption is a two-way process used for confidentiality; you encrypt data to hide it, and then you decrypt it to read it.
+
+Q: What is a hash collision?
+A: This is a rare situation where two different inputs produce the exact same hash. This is why newer algorithms like SHA-256 are considered more secure than older ones like MD5, which is prone to collisions.

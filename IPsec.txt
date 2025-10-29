@@ -1,0 +1,108 @@
+on blue(1st machine)
+
+sudo apt-get update
+sudo apt-get install ipsec-tools strongswan-starter
+Installs the necessary IPsec components (ipsec-tools and strongswan-starter) to manage the VPN tunnel.
+
+on red(2nd machine)
+sudo apt-get update
+sudo apt-get install ipsec-tools strongswan-starter
+
+sudo nano /etc/ipsec.conf
+conn red-to-blue
+    authby=secret
+    auto=route
+    keyexchange=ikev2
+    ike=aes128-md5-modp1024
+    left=192.168.104.13
+    right=192.168.104.14
+    type=transport
+    esp=aes128-sha1-modp1024!
+
+Defines the VPN connection parameters (like IP addresses, encryption, and authentication) for the tunnel initiated from the Red machine.
+
+paste in red
+
+- **left=192.168.104.13** (YOUR machine - RED)
+- **right=192.168.104.14** (FRIEND'S machine - BLUE)
+
+sudo nano /etc/ipsec.conf
+`bash`
+
+`conn blue-to-red
+    authby=secret
+    auto=route
+    keyexchange=ikev2
+    ike=aes128-md5-modp1024
+    left=192.168.104.14
+    right=192.168.104.13
+    type=transport
+    esp=aes128-sha1-modp1024!`
+
+Defines the reciprocal VPN connection parameters for the tunnel initiated from the Blue machine.
+
+paste in blue
+
+
+sudo nano /etc/ipsec.secrets 
+192.168.104.13 192.168.104.14 : PSK "mysecretkey123"
+Configures the Pre-Shared Key (PSK) used to authenticate Red's IP to Blue's IP.
+
+(red ip)(blue ip)
+on red
+
+sudo nano /etc/ipsec.secrets
+192.168.104.14 192.168.104.13 : PSK "mysecretkey123"
+Configures the Pre-Shared Key (PSK) used to authenticate Blue's IP to Red's IP.
+(blue)(red)
+on blue
+
+sudo ipsec start 
+Starts the StrongSwan IPsec service on the machine.
+
+sudo ipsec reload
+on both
+
+sudo ipsec up red-to-blue
+on red
+Initiates the IPsec tunnel defined by the configuration name red-to-blue on the Red machine.
+
+sudo ipsec up blue-to-red
+on blue
+
+sudo tcpdump -i any -w ipsec_capture.pcap host 192.168.104.13
+capture on blue
+Starts network traffic capturing on the Blue machine for all interfaces (-i any), writing the data to the file ipsec_capture.pcap, and filtering for traffic involving Red's IP (192.168.104.13).
+
+
+IPsec:
+IPsec stands for Internet Protocol Security.
+It is a set of protocols used to secure data communication over IP networks by encrypting and authenticating each IP packet.
+It ensures data confidentiality, integrity, and authentication
+Modes of IPsec:
+Transport Mode: Encrypts only the data part (payload) of the IP packet. Used for end-to-end communication (like between two computers).
+Tunnel Mode: Encrypts the entire IP packet (header + payload). Used for network-to-network.
+AH (Authentication Header): Provides authentication and integrity for IP packets but does not encrypt the data.
+ESP (Encapsulating Security Payload): Provides encryption, authentication, and integrity to keep data confidential and secure.
+
+Concept: IPsec (Internet Protocol Security) is a suite of protocols that secures network communication at the IP layer. It provides encryption (scrambling data so it's unreadable) and authentication (proving data came from the right sender). It's the technology that forms the basis of many VPNs (Virtual Private Networks).
+
+Why We Use It:
+To create a secure, encrypted "tunnel" over an untrusted network (like the internet) between two points.
+
+Your Experiment:
+You are installing IPsec tools (strongswan) on two machines (Red and Blue).
+You are configuring /etc/ipsec.conf on both machines to define the connection.
+type=transport: You are using Transport Mode. This mode only encrypts the data (payload) of the packet, leaving the original IP headers intact. This is good for securing communication between two specific hosts.
+authby=secret: You are using a Pre-Shared Key (PSK) for authentication.
+/etc/ipsec.secrets: This file is where you store the actual secret key ("mysecretkey123") that both machines must have to authenticate with each other.
+Finally, you are starting the connection and using tcpdump to capture the packets, which would show as encrypted (e.g., as "ESP" packets) instead of plain-text.
+
+Potential Viva Questions:
+Q: What is the difference between IPsec Transport Mode and Tunnel Mode?
+A: Transport Mode (which you used) encrypts only the data (payload). It's used for host-to-host security. Tunnel Mode encrypts the entire original packet (header and all) and puts it inside a new IP packet. This is used for site-to-site VPNs (e.g., connecting two whole office networks).
+
+Q: What is ESP?
+A: ESP stands for Encapsulating Security Payload. It's the part of IPsec that provides the encryption (confidentiality) and authentication for the data.
+
+

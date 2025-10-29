@@ -1,0 +1,39 @@
+sudo apt-get install john
+john -test
+Runs a performance benchmark for John the Ripper on the current machine's CPU, useful for understanding cracking speed.
+
+sudo adduser testuser99
+sudo cat /etc/shadow
+Displays the contents of the /etc/shadow file, which stores hashed user passwords and other security information.
+
+copy the hash 
+gedit t1.txt #paste in here
+
+john t1.txt
+Starts the password cracking process on the hashes contained in t1.txt, using John's default rules and wordlists.
+
+john --show t1.txt
+
+
+
+John the Ripper: A password-cracking tool that tests password strength by guessing or decrypting hashes — used for security auditing and ethical hacking to find weak passwords.
+
+Concept: John the Ripper (john) is a powerful password cracking tool. It is used to test the strength of passwords by taking a list of password hashes and trying to guess the original plain-text passwords.
+
+Why We Use It:
+Security Auditing: System administrators use it to find weak passwords on their own systems so they can force users to create stronger ones.
+Attackers: Attackers use it to crack password hashes they have stolen from a system.
+
+Your Experiment:
+You are adding a new user, testuser99.
+You are looking at the /etc/shadow file, which is where Linux stores the hashed passwords for all users.
+You are copying that user's hash into a separate file (t1.txt).
+You are running john on that file to start the cracking process. john will use common wordlists (dictionary attack) and then try character combinations (brute-force) to find a match.
+john --show t1.txt is used to display the cracked passwords that john has found.
+
+Potential Viva Questions:
+Q: What is the /etc/shadow file? Why is it separate from /etc/passwd?
+A: The /etc/passwd file contains user information and is readable by all users. The /etc/shadow file contains the actual password hashes and is only readable by the root user. This separation protects the hashes from being seen by normal users.
+
+Q: What is a dictionary attack vs. a brute-force attack?
+A: A dictionary attack tries guessing passwords using a list of common words (like "password", "123456", or words from a dictionary). A brute-force attack tries every single possible combination of characters (e.g., "a", "aa", "ab", "ac"...).

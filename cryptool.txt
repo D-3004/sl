@@ -1,0 +1,39 @@
+- RSA demo with p=211, q=233
+- Encrypt "Krish" → ciphertext → decrypt
+-If cryptool is not there install - sudo snap install cryptool
+
+
+Concept: The note mentions RSA, which is a type of Asymmetric Encryption. This method uses a pair of keys: a Public Key (which you can give to anyone) and a Private Key (which you must keep secret.
+
+Why We Use It:
+Confidentiality: Anyone can use your Public Key to encrypt a message, but only you can decrypt it with your Private Key. This is how HTTPS (SSL/TLS) works to secure websites.
+Digital Signatures: You can use your Private Key to "sign" a document. Anyone can then use your Public Key to verify that the signature is authentic and came from you.
+
+Your Experiment:
+Your note mentions "RSA demo with p=211, q=233". These (p and q) are the two large prime numbers that are multiplied together to start the entire process of generating the public and private keys.
+You are encrypting the name "Krish" using the public key and then decrypting the resulting ciphertext back to "Krish" using the private key, proving the system works.
+
+Potential Viva Questions:
+Q: What is the difference between Symmetric and Asymmetric Encryption?
+A: Symmetric uses one single shared key for both encryption and decryption (e.g., AES). It's fast, but sharing the key securely is difficult. Asymmetric uses two different keys (public/private). It's slower, but it solves the key-sharing problem.
+
+
+Monoalphabetic Cipher
+A monoalphabetic cipher uses a single, fixed substitution rule across the entire plaintext message.
+Substitution: Every occurrence of a particular plaintext letter is always replaced by the same ciphertext letter. This establishes a one-to-one relationship between the plaintext and ciphertext characters.
+Security: These are generally considered less secure because the letter frequency patterns of the original language are preserved in the ciphertext, making them susceptible to frequency analysis attacks.
+Cipher Examples:
+Caesar Cipher (or Shift Cipher): Each letter is shifted a fixed number of places down or up the alphabet (e.g., A → D, B → E for a shift of 3).
+Atbash Cipher: Letters are mapped to their symmetric counterparts (A → Z, B → Y, etc.).
+Affine Cipher and general Simple Substitution Ciphers.
+
+
+Polyalphabetic Cipher
+A polyalphabetic cipher uses multiple substitution alphabets that change during the encryption process, typically based on a keyword.
+Substitution: The same plaintext letter can be replaced by different ciphertext letters depending on its position in the message. This creates a one-to-many relationship between the plaintext and ciphertext characters.
+Security: These are significantly more secure than monoalphabetic ciphers because the changing alphabets break up the frequency patterns, making them much more resistant to frequency analysis.
+Cipher Examples:
+Vigenère Cipher: This is the most classic example. It uses a keyword to determine a series of Caesar shifts for each letter, cycling through the shifts with the key's length.
+Autokey Cipher
+Beaufort Cipher
+Enigma Machine (which used a complex rotor mechanism to implement an advanced polyalphabetic substitution).

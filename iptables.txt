@@ -1,0 +1,69 @@
+1) sudo iptables -f
+Flushes (deletes) all existing firewall rules from all chains, clearing the current ruleset.
+
+2) sudo iptables -L
+Lists all existing firewall rules in all chains with default formatting.
+
+3) sudo iptables -P INPUT DROP
+Sets the default policy for the INPUT chain to DROP, blocking all incoming traffic by default.
+
+4) sudo iptables -P FORWARD DROP
+Sets the default policy for the FORWARD chain to DROP, blocking all traffic attempting to pass through the machine.
+
+5) sudo iptables -P OUTPUT DROP
+Sets the default policy for the OUTPUT chain to DROP, blocking all outgoing traffic by default.
+
+6) sudo iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+Allows all incoming traffic that is part of an already established connection or related to one (like FTP data), essential for receiving responses.
+
+7) sudo iptables -A OUTPUT -m conntrack --ctstate ESTABLISHED -j ACCEPT
+Allows all outgoing traffic that is part of an already established connection, essential for sending responses.
+
+8) sudo iptables -A INPUT -p tcp -s [FRIEND'S_IP] --dport 22 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+Explicitly allows new and established inbound SSH connections (port 22) only from a specific trusted IP address.
+
+9) sudo iptables -A OUTPUT -p tcp --sport 22 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+Allows the necessary outbound responses for the established SSH sessions initiated by the trusted friend.
+
+10) sudo iptables -A INPUT -p tcp -m multiport --dports 80,443 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+Allows new and established inbound HTTP (port 80) and HTTPS (port 443) traffic for the local web server.
+
+11) sudo iptables -A OUTPUT -p tcp -m multiport --dports 80,443 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+Allows the necessary outbound responses to clients connecting to the local web server on ports 80 and 443.
+
+your machine
+12) sudo iptables -L -n -v
+Lists all rules in detail, showing numeric IPs (-n) and packet/byte counts (-v), useful for verification.
+
+friend machine
+13) ssh your_username@[YOUR_IP]
+Attempts to remotely connect via SSH to the firewall-protected machine ([YOUR_IP]) from the friend's machine, testing the SSH rules.
+
+
+
+A firewall is a network security system designed to prevent unauthorized access to or from a private network.
+A firewall is a security system that monitors and controls network traffic based on set rules. It acts like a barrier between your computer/network and the internet, allowing safe traffic and blocking harmful or unauthorized access. iptables is a tool used to set up and manage the firewall rules.
+Each table has chains, which represent points where packets can be filtered(In iptables, chains represent the points where packets are checked and filtered)
+Chain	When it’s used
+INPUT	For packets coming into the system.
+OUTPUT	For packets leaving the system.
+FORWARD	For packets passing through (router/firewall).
+PREROUTING	For packets before routing decisions.
+POSTROUTING	For packets after routing decisions.
+
+Concept: iptables is a user-space command-line tool used to configure the Linux kernel's built-in firewall, which is called Netfilter. It lets you create rules that decide what to do with network packets (e.g., ACCEPT, DROP, REJECT).
+
+Why We Use It:
+To secure a Linux server by creating a strong firewall. The common strategy is to block everything by default and then only allow the specific traffic you need.
+
+Your Experiment:
+sudo iptables -P INPUT DROP: You are setting the default policy for the INPUT chain to DROP. This is a crucial security step: "If no rule matches, block the packet."
+sudo iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT: This is the most important rule for a "stateful" firewall. It automatically allows reply packets. For example, when you browse a website, this rule allows the website's data to come back in to your computer.
+sudo iptables -A INPUT -p tcp -s [FRIEND'S_IP] --dport 22 -j ACCEPT: You are creating a specific exception. You are allowing new incoming SSH (port 22) connections, but only from your friend's specific IP address. All other SSH attempts will be blocked by the default DROP policy.
+
+Potential Viva Questions:
+Q: What are the three main default chains in iptables?
+A: INPUT (for packets destined for the server itself), OUTPUT (for packets originating from the server), and FORWARD (for packets being routed through the server).
+
+Q: What does "stateful firewall" mean?
+A: It means the firewall tracks the state of connections. The rule --ctstate ESTABLISHED,RELATED is what makes it stateful. It knows you started an outgoing connection, so it knows to allow the reply traffic back in.
