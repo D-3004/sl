@@ -1,0 +1,6 @@
+cd Downloads
+git clone --depth=1 https://github.com/htr-tech/zphisher.git
+cd zphisher
+./zphisher.sh
+
+Zphisher: A phishing tool used to create fake login pages to capture usernames and passwords

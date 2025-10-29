@@ -1,0 +1,108 @@
+To use nmap for network discovery and security auditing. 
+
+
+Installation Steps:
+sudo apt-get install nmap
+
+
+To scan a single system, then following command-line can be used:     
+
+nmap -sP 192.168.43.32   --> ur own ip
+Performs a Ping Scan (Host Discovery) to determine if a single target host is online, without performing any port scans.
+
+To scan the entire subnet, then the command is
+
+
+nmap -sP 192.168.43.32/24(ur ip)
+Performs a Ping Scan (Host Discovery) across the entire Class C subnet (/24) to find all active hosts.
+
+
+To scan a multiple targets, all you need to do is to separate each target via space:
+
+nmap target target1 target2
+Scans multiple hosts sequentially or in parallel using default scan settings (e.g., a basic TCP scan on common ports).
+
+nmap -sP 192.168.43.32(ur ip) 192.168.43.169 (frind ip) 
+Performs a Ping Scan to check the up/down status of two specific hosts.
+
+
+To see the list of all the hosts that are being scanned, then use the command with an -sL
+parameter:
+
+nmap -sL target/cdir
+Performs a List Scan which only prints the list of targets Nmap will scan, but does not actually send any packets to the network.
+
+nmap -sL 192.168.43.32(ur ip)  192.168.43.169(frind ip)
+Generates a list of all hosts in the subnet, explicitly excluding a specified IP address from the list.
+
+
+
+nmap -sL 192.168.43.255/24(subnet)  -exclude 192.168.43.32(ur ip)
+scan the target for port number 80,21 and 23.(To scan the HTTP, FTP, and Telnet port )
+
+nmap -p 80,21,23 192.168.43.32 
+Scans only the specified ports (HTTP, FTP, and Telnet) on the target host for open status.
+
+To know the open ports on target system:
+
+nmap -open 192.168.43.32
+Filters the scan results to show only the ports that are currently in the open state on the target system.
+
+Scans the N highest-ratio ports found in nmap-services file:
+
+
+nmap --top-ports 5 192.168.43.32 
+Scans the 5 most commonly open ports based on Nmap's internal database of port usage ratios.
+
+
+
+Nmap Scanning Techniques
+
+nmap -sS 192.168.43.32 (SYN SCAN)
+Performs a TCP SYN Stealth Scan, which is fast and often bypasses simple firewalls by not completing the full TCP handshake.
+
+nmap -sT 192.168.43.32 (TCP SYN SCAN)
+Performs a TCP Connect Scan, which completes the full TCP handshake and is easily logged by the target system.
+
+nmap -sU 192.168.43.32 (UDP SCAN)
+Performs a UDP Scan, checking for open UDP ports, which often involves sending a UDP packet and watching for an ICMP "Port Unreachable" response.
+
+nmap -sF 192.168.43.32 (FIN SCAN)
+Performs a FIN Scan, sending a TCP packet with only the FIN flag set to determine open/closed ports based on the lack or presence of a RST response.
+
+nmap -sV 192.168.43.32 (VERSION DETECTION)
+Performs Version Detection on open ports to determine the exact service name and version number running (e.g., Apache HTTPD 2.4.41).
+
+OS Detection by using Nmap
+
+nmap -O 192.168.43.32
+Performs Operating System (OS) Detection, analyzing network responses to guess the underlying OS and its version.
+
+
+
+
+NMAP:
+Nmap (Network Mapper) is a network scanning tool used to find computers, devices, and open ports on a network. It helps identify which services (like web, SSH, or FTP) are running on those devices.
+Nmap is commonly used by system administrators for network monitoring, troubleshooting, and security auditing to detect vulnerabilities or unauthorized system.
+
+Concept: Nmap (Network Mapper) is a powerful, free, and open-source tool for network discovery and security auditing. It is used to find out what devices (hosts) are on a network, what services (ports) are open on those devices, and what operating system (OS) they are running.
+
+Why We Use It:
+Network Mapping: To get an inventory of all devices on your network.
+Vulnerability Scanning: To find open ports that could be an entry point for an attacker.
+Service & OS Detection: To identify the specific software and OS versions running on a host, which helps in finding known vulnerabilities.
+
+Your Experiment:
+nmap -sP 192.168.43.32/24: This is a "Ping Scan". It checks the entire subnet to see which hosts are online (alive).
+nmap -p 80,21,23 192.168.43.32: This scans for specific ports (HTTP, FTP, Telnet) to see if they are open.
+nmap -sS 192.168.43.32: This is a SYN Scan (or Stealth Scan). It's the default scan type for a reason: it's fast and less likely to be logged by firewalls because it never completes the full connection.
+nmap -sT 192.168.43.32: This is a TCP Connect Scan. It completes a full connection (3-way handshake) with the target. It's more reliable but also much "noisier" and easily logged.
+nmap -O 192.168.43.32: This attempts OS Detection by sending a series of unique probes and analyzing the responses to "fingerprint" the operating system.
+
+Potential Viva Questions:
+Q: What is the difference between a SYN Scan (-sS) and a TCP Connect Scan (-sT)?
+A: A TCP Connect Scan (-sT) completes the full 3-way handshake. It's like fully opening a door. This is easily detected. A SYN Scan (-sS) only sends the first SYN packet and waits for a SYN-ACK; it never completes the connection. It's like knocking on the door to see if someone answers, but never opening it. It's "stealthy".
+
+Q: What are the port states Nmap shows?
+A: The main ones are: Open (a service is actively listening), Closed (the port is reachable, but no service is listening), and Filtered (a firewall is blocking the port, so Nmap can't tell if it's open or closed).
+

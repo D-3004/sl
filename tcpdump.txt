@@ -1,0 +1,45 @@
+#setup 3 pc in netkit
+vstart pc1 –-eth0=A 
+vstart pc2 –-eth0=B
+vstart pc3 –-eth0=C
+
+Assign ipadd 
+ifconfig eth0 192.168.11.1 "for pc 1"
+ifconfig eth0 192.168.11.2 "for pc 2"
+ifconfig eth0 192.168.11.3 "for pc 3"
+
+On pc1
+Ping 192.168.11.2
+
+On pc2
+tcpdump -i any #all traffic
+
+On pc3
+ifconfig
+ifconfig eth0 promisc
+Sets the eth0 network interface to promiscuous mode, allowing it to read all traffic flowing across the network segment, not just packets addressed to its MAC.
+
+ifconfig
+tcpdump -I any -n -xX host 192.168.11.2
+Starts a detailed packet capture on pc3, filtering (host 192.168.11.2) to show traffic destined for pc2, thereby attempting to sniff the conversation between pc1 and pc2.
+
+
+
+tcpdump is a command-line packet analyzer used to capture and inspect network packets in real time.
+Promiscuous mode allows a network interface card (NIC) to capture all packets on the network segment, not just those addressed to it.
+
+Why We Use It:
+To analyze network traffic and troubleshoot connectivity or performance issues.
+To monitor or detect attacks, unusual activity, or verify packet flow.
+
+Promiscuous Mode: Enabled by default in tcpdump. You can verify using:
+ifconfig eth0 promisc → enables promiscuous mode
+ifconfig eth0 -promisc → disables it
+
+Viva Questions:
+
+Q: What does promiscuous mode do?
+A: It allows a NIC to capture all packets on the network, not just those intended for it.
+
+Q: What’s the difference between tcpdump and Wireshark?
+A: tcpdump is command-line based, while Wireshark provides a GUI for deeper packet analysis.

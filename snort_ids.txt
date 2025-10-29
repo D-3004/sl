@@ -1,0 +1,62 @@
+sudo apt-get update
+sudo apt-get dist-upgrade - Upgrades the entire distribution
+sudo apt-get install snort
+
+sudo vi +45 /etc/snort/snort.conf
+ipvar HOME_NET 192.168.96.0/24 #paste 
+
+sudo vi +104 /etc/snort/snort.conf
+paste this->
+var RULE_PATH /etc/snort/rules
+var SO_RULE_PATH /etc/snort/so_rules
+var PREPROC_RULE_PATH /etc/snort/preproc_rules
+var WHITE_LIST_PATH /etc/snort/rules/iplists
+var BLACK_LIST_PATH /etc/snort/rules/iplists
+
+sudo vi +545 /etc/snort/snort.conf
+include $RULE_PATH/local.rules
+
+sudo gedit /etc/snort/rules/local.rules
+alert icmp any any -> $HOME_NET any (msg:"ICMP test"; sid:1000001; rev:1;)
+Creates a custom Snort rule to trigger an alert any time an ICMP (ping) packet is sent to any machine within the defined home network.
+
+sudo snort -T -c /etc/snort/snort.conf
+Tests the Snort configuration file (-c) for syntax errors before running it live.
+
+sudo snort -A console -c /etc/snort/snort.conf
+Runs Snort in console alert mode (-A console), using the specified config file (-c), to display alerts directly on the terminal.
+
+ping ur ip from friend
+Sends an ICMP packet from a friend's machine to the Snort machine, which should trigger the custom rule.
+
+cd /var/log/snort
+tail -f /var/logs/snort/alert
+Displays the last few lines of the Snort alert file (/var/logs/snort/alert) and continuously monitors (-f) it for new entries.
+
+watch logs
+
+
+Snort:
+Snort is an open-source Intrusion Detection and Prevention System (IDS/IPS) used to monitor network traffic and detect suspicious or malicious activities using predefined rules. It helps in network security by identifying and alerting against attacks like port scans, malware, or unauthorized access.
+
+Concept: Snort is an IDS (Intrusion Detection System). Its job is to monitor all network traffic in real-time, analyze it against a set of rules, and generate alerts when it detects suspicious activity or a known attack pattern.
+
+Why We Use It:
+It acts like a "security camera" for your network. It doesn't stop attacks, but it alerts you that an attack is happening (e.g., someone is scanning your network, trying a DoS attack, or using known malware).
+
+Your Experiment:
+You are installing Snort and configuring its main file (snort.conf).
+ipvar HOME_NET 192.168.96.0/24: This is the most important step. You are telling Snort which network is "your" network so it knows which direction traffic is flowing (internal vs. external).
+include $RULE_PATH/local.rules: You are telling Snort to load a custom rules file.
+Your Custom Rule: alert icmp any any -> $HOME_NET any (msg:"ICMP test"; sid:1000001; rev:1;).
+Translation: "Generate an alert for any ICMP (ping) traffic coming from any IP and any port, going to our $HOME_NET on any port. Show the message 'ICMP test'."
+You then run Snort in console mode (-A console) and use ping from another machine to trigger your rule and see the alert pop up.
+
+Potential Viva Questions:
+Q: What is the difference between an IDS and a Firewall?
+A: A Firewall is like a security guard that blocks or allows traffic based on rules (e.g., "Block all traffic on port 23"). An IDS is like a security camera that monitors all traffic and alerts you if it sees something suspicious, but it doesn't block it.
+
+Q: What is an IPS?
+A: An IPS (Intrusion Prevention System) is the next step. It's like an IDS and a Firewall combined. It monitors traffic, and when it detects an attack, it also has the power to block the malicious traffic automatically. Snort can be configured to act as an IPS.
+
+

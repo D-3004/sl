@@ -1,0 +1,82 @@
+Get into NETKIT
+
+navigate to "NETKIT"
+./checkconfiguration.sh
+copy the bash command and paste 
+do ./checkconfiguration.sh
+again paste the bash command 
+again do ./checkconfiguration.sh
+
+start PC1 PC2 and PC3
+vstart pc1 –-eth0=A 
+vstart pc2 –-eth0=B
+vstart pc3 –-eth0=C
+
+Assign ipadd 
+ifconfig eth0 192.168.11.1 "for pc 1"
+ifconfig eth0 192.168.11.2 "for pc 2"
+ifconfig eth0 192.168.11.3 "for pc 3"
+
+iptables -t nat -A POSTROUTING -p icmp -j SNAT --to-source 192.168.11.2 #pc2 ip
+this will spoof ip of pc2 and can be captured by
+Sets up Source Network Address Translation (SNAT) on the routing machine to rewrite the source IP of any outgoing ICMP packet to be 192.168.11.2 (spoofing pc2's IP).
+
+tcpdump -i any -n -xX icmp | grep reply  #on pc3
+tcpdump -i any -n -xX icmp | grep request #on pc2
+hping3 -1 –flood <ip of pc3> #on pc1
+Launches an indefinite ICMP flood (ping flood) from pc1 to pc3, generating the spoofed traffic.
+
+=========================================
+MAC SPOOF
+
+service arpwatch status
+service arpwatch restart
+
+Two machines must be known hosts to each other (ping each other)
+ 
+arp -e #to check 
+Displays the current Address Resolution Protocol (ARP) cache, showing the IP-to-MAC address mappings known by the system.
+
+On system 1
+keep logs in running state
+1. tail -f /var/log/syslog
+Displays the last lines of the general system log and continuously outputs new lines in real-time.
+               or
+tail -f /var/log/syslog | grep changed
+
+on system 2
+1. sudo ifconfig enp4s0 hw ether 18:60:24:a9:23:bb(mac) #change last two
+Changes the MAC (Hardware) address of the enp4s0 network interface to a new, manually specified value, thereby spoofing the MAC.
+
+ check logs (arpwatch)
+
+
+SPOOFING:
+A spoofing attack is when a malicious party impersonates another device or user on a network in order to launch attacks against network hosts, steal data, spread malware or bypass access controls. 
+IP Spoofing:
+In an IP address spoofing attack, an attacker sends IP packets from a false or “spoofed” source address. DOS stacks often use IP spoofing to overload network.
+MAC Spoofing:
+ARP is short form of Address Resolution Protocol. This is a protocol that is used for mapping IP addresses to MAC (Media Access Control) addresses for transmitting data .ARP spoofing is when a device MAC address  is mapped to other IP address so other machines send their traffic to the wrong place.
+
+Concept:
+IP Spoofing: This is the act of creating an IP packet with a fake or modified source IP address.
+MAC Spoofing: This is the act of changing your device's physical hardware address (MAC address) to make it look like another device.
+
+Why We Use It:
+Attacks: To hide the attacker's true identity or to perform "Man-in-the-Middle" or "Denial of Service" attacks.
+Bypassing Security: If a network restricts access based on IP or MAC addresses (e.g., a Wi-Fi network), spoofing can be used to bypass these filters.
+
+Your Experiment:
+[cite_start]IP Spoofing: You are using iptables with the SNAT (Source Network Address Translation) target[cite: 5]. [cite_start]This rule tells the system: "When a packet leaves this machine, change its source IP to 192.168.11.2."[cite: 5].
+[cite_start]Verification: You are using tcpdump on the other machines to capture and inspect the ICMP (ping) packets to prove that the source IP has indeed been changed[cite: 6, 7].
+[cite_start]MAC Spoofing: You are using ifconfig enp4s0 hw ether ... to manually change your network card's MAC address[cite: 8].
+[cite_start]Detection: You are using arpwatch[cite: 8]. [cite_start]This tool monitors the network and logs any changes, specifically looking for when an IP address suddenly starts using a new or different MAC address, which is a key sign of spoofing[cite: 8].
+
+Potential Viva Questions:
+Q: What is the difference between SNAT and DNAT in iptables?
+A: SNAT (Source NAT) changes the source IP of a packet as it leaves. DNAT (Destination NAT) changes the destination IP of a packet as it arrives (this is used for port forwarding).
+
+Q: How does arpwatch help detect MAC spoofing?
+A: arpwatch keeps a table of IP addresses and their corresponding MAC addresses. [cite_start]If it suddenly sees a known IP address communicating with a new MAC address, it sends an alert, which is what your log grep changed is looking for[cite: 8].
+
+

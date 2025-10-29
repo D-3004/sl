@@ -1,0 +1,69 @@
+sudo apt update
+sudo apt -y install squid apache2-utils net-tools
+cd /etc/squid 
+sudo cp /etc/squid/squid.conf squid.conf.copy
+sudo gedit /etc/squid/squid.conf
+- remove everything ans paste below content:
+-----------START-----------
+# ===============================
+# Minimal Authenticated Proxy Lab
+# ===============================
+
+# Listen on default port
+http_port 3128
+
+# Use basic auth with htpasswd file
+auth_param basic program /usr/lib/squid/basic_ncsa_auth /etc/squid/.htpasswd
+auth_param basic children 5
+auth_param basic realm Squid Basic Authentication
+auth_param basic credentialsttl 5 hours
+
+# Define ACLs
+acl localhost src 127.0.0.1/32
+acl to_localhost dst 127.0.0.0/8
+acl authenticated proxy_auth REQUIRED
+acl lan src 192.168.0.0/16 10.0.0.0/8 172.16.0.0/12
+
+# ===============================
+# Access rules
+# ===============================
+
+# allow localhost (system itself)
+http_access allow localhost
+
+# allow LAN users who authenticate
+http_access allow lan authenticated
+
+# deny all others
+http_access deny all
+
+# ===============================
+# Privacy / header stripping
+# ===============================
+request_header_access Referer deny all
+request_header_access X-Forwarded-For deny all
+request_header_access Via deny all
+request_header_access Cache-Control deny all
+forwarded_for off
+
+# ===============================
+# Misc options
+# ===============================
+visible_hostname detox-proxy
+cache_mgr admin@localdomain
+
+-----------END-----------
+sudo htpasswd -c /etc/squid/.htpasswd krish
+sudo systemctl restart squid
+- go to firefox Browser in settings search for Proxy
+- add your system ip and port as 3128 click on ok .
+- tick the check box Also use this proxy for HTTPS
+
+
+SQUID:
+Squid is an open-source proxy server that caches frequently visited web pages, filters traffic, and performs DNS lookups. It supports all major protocols, such as HTTP, HTTPS, and FTP.
+Squid is a web proxy server and procides caching service. It sits between users and the internet to store (cache) web content, control access and improves security.
+ACL:An ACL is a set of rules that control who can access what in a system or network. It decides which users, IPs, or devices are allowed or denied to use certain resources or services.
+
+
+
